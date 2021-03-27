@@ -10,6 +10,8 @@ import (
 const (
 	echoPort = "ECHO_PORT"
 
+	debugRepo = "DEBUG_REPOSITORY"
+
 	dbHost = "POSTGRES_HOST"
 	dbPort = "POSTGRES_PORT"
 	dbUser = "POSTGRES_USER"

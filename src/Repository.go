@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"os"
+	"strconv"
 )
 
 var db *gorm.DB
@@ -21,14 +22,26 @@ func RepositoryInit() {
 	)
 
 	var err error
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
+
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
 
-	db.AutoMigrate(&Catalogo{}, &Lote{}, &Publicacion{}, &Archivo{})
+	debug, _ := strconv.ParseBool(os.Getenv(debugRepo))
+	if debug {
+		db.Logger = logger.Default.LogMode(logger.Info)
+	}
+
+	err = db.AutoMigrate(&Catalogo{}, &Lote{}, &Publicacion{}, &Archivo{})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func CreateCatalogo(catalogo *Catalogo) error {
+	result := db.Create(catalogo)
+	return result.Error
 }
 
 func ReadCatalogos() ([]Catalogo, error) {
