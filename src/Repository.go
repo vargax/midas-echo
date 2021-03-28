@@ -44,6 +44,12 @@ func CreateCatalogo(catalogo *Catalogo) error {
 	return result.Error
 }
 
+func ReadCatalogo(idCatalogo int) (Catalogo, error) {
+	var catalogo Catalogo
+	result := db.First(&catalogo, idCatalogo)
+	return catalogo, result.Error
+}
+
 func ReadCatalogos() ([]Catalogo, error) {
 	var catalogos []Catalogo
 	result := db.Find(&catalogos)

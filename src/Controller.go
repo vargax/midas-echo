@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
@@ -16,8 +18,28 @@ const (
 func ControllerInit() {
 	e.POST(catalogosPath, PostCatalogos)
 	e.GET(catalogosPath, GetCatalogos)
+	e.GET(catalogosPath+"/:"+catalogoIdParam, GetCatalogosId)
 
 	e.POST(catalogosPath+"/:"+catalogoIdParam+lotesPath, PostCatalogosLotes)
+}
+
+func GetCatalogosId(c echo.Context) error {
+	var err error
+	var idCatalogo int
+
+	idCatalogo, err = strconv.Atoi(c.Param(catalogoIdParam))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	catalogo, err := ReadCatalogo(idCatalogo)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
+	if err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, catalogo)
 }
 
 func GetCatalogos(c echo.Context) error {
