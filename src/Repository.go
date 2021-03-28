@@ -50,3 +50,8 @@ func ReadCatalogos() ([]Catalogo, error) {
 
 	return catalogos, result.Error
 }
+
+func CreateLote(lote *Lote) error {
+	result := db.Create(lote)
+	return result.Error
+}

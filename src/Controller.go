@@ -3,15 +3,21 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
 )
 
 const (
-	uriCatalogos = "/catalogos"
+	catalogosPath = "/catalogos"
+	lotesPath     = "/lotes"
+
+	catalogoIdParam = "catalogoId"
 )
 
 func ControllerInit() {
-	e.GET(uriCatalogos, GetCatalogos)
-	e.POST(uriCatalogos, PostCatalogos)
+	e.POST(catalogosPath, PostCatalogos)
+	e.GET(catalogosPath, GetCatalogos)
+
+	e.POST(catalogosPath+"/:"+catalogoIdParam+lotesPath, PostCatalogosLotes)
 }
 
 func GetCatalogos(c echo.Context) error {
@@ -24,15 +30,44 @@ func GetCatalogos(c echo.Context) error {
 }
 
 func PostCatalogos(c echo.Context) error {
-	catalogoPost := new(CatalogoPost)
+	var err error
 
-	err := c.Bind(catalogoPost)
-	if err != nil {
-		return err
+	catalogoPost := new(CatalogoPost)
+	if err = c.Bind(catalogoPost); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+	if err = c.Validate(catalogoPost); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
 	catalogo, err := HandleNuevoCatalogo(catalogoPost)
 	if err != nil {
 		return err
 	}
 	return c.JSON(http.StatusCreated, catalogo)
+}
+
+func PostCatalogosLotes(c echo.Context) error {
+	var err error
+	var idCatalogo int
+
+	idCatalogo, err = strconv.Atoi(c.Param(catalogoIdParam))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	lotePost := new(LotePost)
+	if err = c.Bind(lotePost); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	if err = c.Validate(lotePost); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	lote, err := HandleNuevoLote(idCatalogo, lotePost)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusCreated, lote)
 }

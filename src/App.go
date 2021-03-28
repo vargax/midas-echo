@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -29,6 +30,10 @@ func AppInit() {
 	e.Use(middleware.Gzip())
 	e.Use(middleware.Secure())
 
+	e.Validator = &DataValidator{
+		validator: validator.New(),
+	}
+
 }
 
 func main() {
@@ -42,4 +47,12 @@ func main() {
 	ControllerInit()
 
 	e.Logger.Fatal(e.Start(os.Getenv(echoPort)))
+}
+
+type DataValidator struct {
+	validator *validator.Validate
+}
+
+func (dv *DataValidator) Validate(i interface{}) error {
+	return dv.validator.Struct(i)
 }

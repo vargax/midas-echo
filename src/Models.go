@@ -12,21 +12,21 @@ type Catalogo struct {
 
 type Lote struct {
 	gorm.Model
-	CatalogoID    uint
+	CatalogoID    int
 	Descripcion   string
 	Publicaciones []Publicacion
 }
 
 type Publicacion struct {
 	gorm.Model
-	LoteID   uint
+	LoteID   int
 	Nombre   string
 	Archivos []Archivo
 }
 
 type Archivo struct {
 	gorm.Model
-	PublicacionID uint
+	PublicacionID int
 	Nombre        string
 	Ruta          string
 }
