@@ -5,28 +5,32 @@ import (
 )
 
 type Catalogo struct {
-	gorm.Model
-	EsPublico bool
-	Lotes     []Lote
+	ID         int
+	EsPublico  bool
+	Lotes      []Lote `json:",omitempty"`
+	gorm.Model `json:"-"`
 }
 
 type Lote struct {
-	gorm.Model
+	ID            int
 	CatalogoID    int
 	Descripcion   string
-	Publicaciones []Publicacion
+	Publicaciones []Publicacion `json:",omitempty"`
+	gorm.Model    `json:"-"`
 }
 
 type Publicacion struct {
-	gorm.Model
-	LoteID   int
-	Nombre   string
-	Archivos []Archivo
+	ID         int
+	LoteID     int
+	Nombre     string
+	Archivos   []Archivo `json:",omitempty"`
+	gorm.Model `json:"-"`
 }
 
 type Archivo struct {
-	gorm.Model
+	ID            int
 	PublicacionID int
 	Nombre        string
 	Ruta          string
+	gorm.Model    `json:"-"`
 }
