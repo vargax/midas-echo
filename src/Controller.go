@@ -12,6 +12,7 @@ const (
 	catalogosPath = "/catalogos"
 	lotesPath     = "/lotes"
 
+	preloadParam    = "preload"
 	catalogoIdParam = "catalogoId"
 )
 
@@ -43,7 +44,9 @@ func GetCatalogosId(c echo.Context) error {
 }
 
 func GetCatalogos(c echo.Context) error {
-	catalogos, err := ReadCatalogos()
+	preload, _ := strconv.ParseBool(c.QueryParam(preloadParam))
+
+	catalogos, err := ReadCatalogos(preload)
 	if err != nil {
 		e.Logger.Error(err)
 		return echo.ErrNotFound

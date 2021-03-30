@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"
 	"os"
 	"strconv"
@@ -50,9 +51,15 @@ func ReadCatalogo(idCatalogo int) (Catalogo, error) {
 	return catalogo, result.Error
 }
 
-func ReadCatalogos() ([]Catalogo, error) {
+func ReadCatalogos(preload bool) ([]Catalogo, error) {
 	var catalogos []Catalogo
-	result := db.Find(&catalogos)
+	var result *gorm.DB
+
+	if preload {
+		result = db.Preload(clause.Associations).Find(&catalogos)
+	} else {
+		result = db.Find(&catalogos)
+	}
 
 	return catalogos, result.Error
 }
