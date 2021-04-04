@@ -1,4 +1,4 @@
-package main
+package app
 
 func HandleNuevoCatalogo(cp *CatalogoPost) (Catalogo, error) {
 	nuevoCatalogo := Catalogo{

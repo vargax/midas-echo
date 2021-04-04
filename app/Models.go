@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"gorm.io/gorm"
@@ -33,4 +33,10 @@ type Archivo struct {
 	Nombre        string
 	Ruta          string
 	gorm.Model    `json:"-"`
+}
+
+type User struct {
+	ID    int
+	email string
+	gorm.Model
 }
