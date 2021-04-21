@@ -1,4 +1,4 @@
-package app
+package middleware
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	auth0 "github.com/auth0/go-jwt-middleware"
 	"github.com/form3tech-oss/jwt-go"
 	"github.com/labstack/echo/v4"
+	"gitlab.activarsas.net/cvargasc/midas-echo/env"
 	"net/http"
 	"strconv"
 
@@ -13,8 +14,8 @@ import (
 )
 
 var (
-	iss      = "https://" + os.Getenv(jwtIss) + "/"
-	audience = os.Getenv(jwtAudience)
+	iss      = "https://" + os.Getenv(env.JwtIss) + "/"
+	audience = os.Getenv(env.JwtAudience)
 )
 
 type (
@@ -39,7 +40,7 @@ type (
 var authMiddleware *auth0.JWTMiddleware
 
 func AuthMiddlewareInit() {
-	debug, _ := strconv.ParseBool(os.Getenv(debugJwt))
+	debug, _ := strconv.ParseBool(os.Getenv(env.DebugJwt))
 
 	options := auth0.Options{
 		ValidationKeyGetter: validationKeyGetter,

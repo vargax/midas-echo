@@ -1,45 +1,28 @@
-package app
+package api
 
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/controllers"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/repository"
+	"gitlab.activarsas.net/cvargasc/midas-echo/env"
 	"net/http"
 	"os"
 )
 
-const (
-	echoPort = "ECHO_PORT"
-
-	debugRepo = "DEBUG_REPOSITORY"
-	debugJwt  = "DEBUG_JWT"
-
-	jwtIss      = "JWT_ISS"
-	jwtAudience = "JWT_AUDIENCE"
-
-	corsOrigin = "CORS_ORIGIN"
-
-	dbHost = "POSTGRES_HOST"
-	dbPort = "POSTGRES_PORT"
-	dbUser = "POSTGRES_USER"
-	dbPass = "POSTGRES_PASSWORD"
-	dbName = "POSTGRES_DB"
-)
-
-var e *echo.Echo
-
 func Init() {
 
-	EchoInit()
-	RepositoryInit()
-	AuthMiddlewareInit()
-	ControllerInit()
+	repository.InitRepository()
 
-	e.Logger.Fatal(e.Start(os.Getenv(echoPort)))
+	e := InitFramework()
+	controllers.InitRoutes(e)
+
+	e.Logger.Fatal(e.Start(os.Getenv(env.EchoPort)))
 }
 
-func EchoInit() {
-	e = echo.New()
+func InitFramework() *echo.Echo {
+	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -47,7 +30,7 @@ func EchoInit() {
 	e.Use(middleware.Secure())
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{os.Getenv(corsOrigin)},
+		AllowOrigins: []string{os.Getenv(env.CorsOrigin)},
 		AllowHeaders: []string{"Authorization"},
 		AllowMethods: []string{http.MethodGet, http.MethodPost},
 	}))
@@ -56,6 +39,7 @@ func EchoInit() {
 		validator: validator.New(),
 	}
 
+	return e
 }
 
 type DataValidator struct {

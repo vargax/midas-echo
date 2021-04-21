@@ -1,4 +1,4 @@
-package app
+package models
 
 type CatalogoPost struct {
 	EsPublico bool `validate:"required"`

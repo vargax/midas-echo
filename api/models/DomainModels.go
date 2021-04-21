@@ -1,4 +1,4 @@
-package app
+package models
 
 import (
 	"gorm.io/gorm"
@@ -23,20 +23,6 @@ type Publicacion struct {
 	ID         int
 	LoteID     int
 	Nombre     string
-	Archivos   []Archivo `json:",omitempty"`
+	Archivos   []File `json:",omitempty"`
 	gorm.Model `json:"-"`
-}
-
-type Archivo struct {
-	ID            int
-	PublicacionID int
-	Nombre        string
-	Ruta          string
-	gorm.Model    `json:"-"`
-}
-
-type User struct {
-	ID    int
-	email string
-	gorm.Model
 }

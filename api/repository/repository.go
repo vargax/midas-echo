@@ -1,7 +1,10 @@
-package app
+package repository
 
 import (
 	"fmt"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/models"
+	"gitlab.activarsas.net/cvargasc/midas-echo/env"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -12,14 +15,14 @@ import (
 
 var db *gorm.DB
 
-func RepositoryInit() {
+func InitRepository() {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
-		os.Getenv(dbHost),
-		os.Getenv(dbPort),
-		os.Getenv(dbUser),
-		os.Getenv(dbName),
-		os.Getenv(dbPass),
+		os.Getenv(env.DbHost),
+		os.Getenv(env.DbPort),
+		os.Getenv(env.DbUser),
+		os.Getenv(env.DbName),
+		os.Getenv(env.DbPass),
 	)
 
 	var err error
@@ -29,30 +32,31 @@ func RepositoryInit() {
 		panic(err)
 	}
 
-	debug, _ := strconv.ParseBool(os.Getenv(debugRepo))
+	debug, _ := strconv.ParseBool(os.Getenv(env.DebugRepo))
 	if debug {
 		db.Logger = logger.Default.LogMode(logger.Info)
 	}
 
-	err = db.AutoMigrate(&Catalogo{}, &Lote{}, &Publicacion{}, &Archivo{})
+	err = db.AutoMigrate(&models.Catalogo{}, &models.Lote{}, &models.Publicacion{}, &models.File{})
 	if err != nil {
 		panic(err)
 	}
+
 }
 
-func CreateCatalogo(catalogo *Catalogo) error {
+func CreateCatalogo(catalogo *models.Catalogo) error {
 	result := db.Create(catalogo)
 	return result.Error
 }
 
-func ReadCatalogo(idCatalogo int) (Catalogo, error) {
-	var catalogo Catalogo
+func ReadCatalogo(idCatalogo int) (models.Catalogo, error) {
+	var catalogo models.Catalogo
 	result := db.First(&catalogo, idCatalogo)
 	return catalogo, result.Error
 }
 
-func ReadCatalogos(preload bool) ([]Catalogo, error) {
-	var catalogos []Catalogo
+func ReadCatalogos(preload bool) ([]models.Catalogo, error) {
+	var catalogos []models.Catalogo
 	var result *gorm.DB
 
 	if preload {
@@ -64,7 +68,7 @@ func ReadCatalogos(preload bool) ([]Catalogo, error) {
 	return catalogos, result.Error
 }
 
-func CreateLote(lote *Lote) error {
+func CreateLote(lote *models.Lote) error {
 	result := db.Create(lote)
 	return result.Error
 }

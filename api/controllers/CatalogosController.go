@@ -1,39 +1,26 @@
-package app
+package controllers
 
 import (
 	"errors"
 	"github.com/labstack/echo/v4"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/models"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/repository"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/services"
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
 
-const (
-	catalogosPath = "/catalogos"
-	lotesPath     = "/lotes"
-
-	preloadParam    = "preload"
-	catalogoIdParam = "catalogoId"
-)
-
-func ControllerInit() {
-	e.POST(catalogosPath, PostCatalogos)
-	e.GET(catalogosPath, GetCatalogos)
-	e.GET(catalogosPath+"/:"+catalogoIdParam, GetCatalogosId)
-
-	e.POST(catalogosPath+"/:"+catalogoIdParam+lotesPath, PostCatalogosLotes)
-}
-
 func GetCatalogosId(c echo.Context) error {
 	var err error
 	var idCatalogo int
 
-	idCatalogo, err = strconv.Atoi(c.Param(catalogoIdParam))
+	idCatalogo, err = strconv.Atoi(c.Param(CatalogoIdParam))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	catalogo, err := ReadCatalogo(idCatalogo)
+	catalogo, err := repository.ReadCatalogo(idCatalogo)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
@@ -44,12 +31,12 @@ func GetCatalogosId(c echo.Context) error {
 }
 
 func GetCatalogos(c echo.Context) error {
-	preload, _ := strconv.ParseBool(c.QueryParam(preloadParam))
+	preload, _ := strconv.ParseBool(c.QueryParam(PreloadParam))
 
-	catalogos, err := ReadCatalogos(preload)
+	catalogos, err := repository.ReadCatalogos(preload)
 	if err != nil {
 		e.Logger.Error(err)
-		return echo.ErrNotFound
+		return echo.ErrInternalServerError
 	}
 	return c.JSON(http.StatusOK, catalogos)
 }
@@ -57,7 +44,7 @@ func GetCatalogos(c echo.Context) error {
 func PostCatalogos(c echo.Context) error {
 	var err error
 
-	catalogoPost := new(CatalogoPost)
+	catalogoPost := new(models.CatalogoPost)
 	if err = c.Bind(catalogoPost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -65,7 +52,7 @@ func PostCatalogos(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	catalogo, err := HandleNuevoCatalogo(catalogoPost)
+	catalogo, err := services.NewCatalogo(catalogoPost)
 	if err != nil {
 		return err
 	}
@@ -76,12 +63,12 @@ func PostCatalogosLotes(c echo.Context) error {
 	var err error
 	var idCatalogo int
 
-	idCatalogo, err = strconv.Atoi(c.Param(catalogoIdParam))
+	idCatalogo, err = strconv.Atoi(c.Param(CatalogoIdParam))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	lotePost := new(LotePost)
+	lotePost := new(models.LotePost)
 	if err = c.Bind(lotePost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -89,7 +76,7 @@ func PostCatalogosLotes(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	lote, err := HandleNuevoLote(idCatalogo, lotePost)
+	lote, err := services.NewLote(idCatalogo, lotePost)
 	if err != nil {
 		return err
 	}

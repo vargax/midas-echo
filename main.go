@@ -2,15 +2,15 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"gitlab.activarsas.net/cvargasc/midas-echo/app"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api"
 )
 
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load("env/.env")
 	if err != nil {
 		panic(err)
 	}
 
-	app.Init()
+	api.Init()
 
 }
