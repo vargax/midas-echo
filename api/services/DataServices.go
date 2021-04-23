@@ -5,7 +5,7 @@ import (
 	"gitlab.activarsas.net/cvargasc/midas-echo/api/repository"
 )
 
-func NewCatalogo(cp *models.CatalogoPost) (models.Catalogo, error) {
+func NewCatalogo(cp *models.PostCatalogos) (models.Catalogo, error) {
 	nuevoCatalogo := models.Catalogo{
 		EsPublico: cp.EsPublico,
 	}
@@ -14,7 +14,7 @@ func NewCatalogo(cp *models.CatalogoPost) (models.Catalogo, error) {
 	return nuevoCatalogo, err
 }
 
-func NewLote(idCatalogo uint, lp *models.LotePost) (models.Lote, error) {
+func NewLote(idCatalogo uint, lp *models.PostCatalogosLotes) (models.Lote, error) {
 	nuevoLote := models.Lote{
 		CatalogoID:  idCatalogo,
 		Descripcion: lp.Descripcion,

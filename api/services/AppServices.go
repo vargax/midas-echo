@@ -1,10 +1,14 @@
 package services
 
 import (
+	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"gitlab.activarsas.net/cvargasc/midas-echo/api/models"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/repository"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/utils"
 	"gitlab.activarsas.net/cvargasc/midas-echo/env"
+	"gorm.io/gorm"
 	"os"
 	"time"
 )
@@ -25,20 +29,24 @@ func Env() {
 	}
 }
 
-func GenJwtToken(tp *models.TokenPost) (*models.JwtToken, error) {
+func NewJwtToken(tp *models.PostAppToken) (*models.JwtToken, error) {
 
-	username := tp.Username
-	password := tp.Password
+	user, err := repository.ReadUser(tp.Username)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, echo.ErrUnauthorized
+	}
+	if err != nil {
+		return nil, err
+	}
 
-	if username != "jon" || password != "shhh!" {
+	if !utils.PasswordMatch(user.Password, tp.Password) {
 		return nil, echo.ErrUnauthorized
 	}
 
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
-	claims["name"] = "Jon Snow"
-	claims["admin"] = true
+	claims["UserID"] = user.ID
 	claims["exp"] = time.Now().Add(tokenLive).Unix()
 
 	signedToken, err := token.SignedString([]byte(secret))

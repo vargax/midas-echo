@@ -1,12 +1,10 @@
 package repository
 
 import (
-	"encoding/base64"
 	"fmt"
 	"gitlab.activarsas.net/cvargasc/midas-echo/api/models"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/utils"
 	"gitlab.activarsas.net/cvargasc/midas-echo/env"
-	"golang.org/x/crypto/bcrypt"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -75,14 +73,14 @@ func initDB() error {
 
 		fmt.Printf("Creating default user %s with password %s", defaultUser, defaultPass)
 
-		hash, err := bcrypt.GenerateFromPassword([]byte(defaultPass), bcrypt.DefaultCost)
+		defaultPass, err := utils.EncodePassword(defaultPass)
 		if err != nil {
 			return err
 		}
 
 		admin := models.User{
-			Email:  defaultUser,
-			Passwd: base64.URLEncoding.EncodeToString(hash),
+			Username: defaultUser,
+			Password: defaultPass,
 		}
 
 		result := db.Create(&admin)

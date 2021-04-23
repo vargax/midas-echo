@@ -4,11 +4,11 @@ package models
 // To validate business logic
 // *************************
 
-type CatalogoPost struct {
+type PostCatalogos struct {
 	EsPublico bool `validate:"required"`
 }
 
-type LotePost struct {
+type PostCatalogosLotes struct {
 	Descripcion string `validate:"required"`
 }
 
@@ -16,7 +16,7 @@ type LotePost struct {
 // To validate Application logic
 // *************************
 
-type TokenPost struct {
+type PostAppToken struct {
 	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }

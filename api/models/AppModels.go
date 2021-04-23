@@ -15,9 +15,9 @@ type File struct {
 }
 
 type User struct {
-	ID     uint
-	Email  string `gorm:"unique;not null"`
-	Passwd string `json:"-" gorm:"not null"`
+	ID       uint
+	Username string `gorm:"uniqueIndex;not null"`
+	Password string `json:"-" gorm:"not null"`
 	gorm.Model
 }
 

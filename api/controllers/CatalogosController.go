@@ -33,15 +33,14 @@ func GetCatalogos(c echo.Context) error {
 
 	catalogos, err := repository.ReadCatalogos(preload)
 	if err != nil {
-		e.Logger.Error(err)
-		return echo.ErrInternalServerError
+		return err
 	}
 	return c.JSON(http.StatusOK, catalogos)
 }
 
 func PostCatalogos(c echo.Context) error {
 
-	catalogoPost := new(models.CatalogoPost)
+	catalogoPost := new(models.PostCatalogos)
 	if err := c.Bind(catalogoPost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -64,7 +63,7 @@ func PostCatalogosLotes(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	lotePost := new(models.LotePost)
+	lotePost := new(models.PostCatalogosLotes)
 	if err = c.Bind(lotePost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

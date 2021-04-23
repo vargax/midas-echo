@@ -10,7 +10,7 @@ import (
 func PostAppToken(c echo.Context) error {
 	var err error
 
-	tokenPost := new(models.TokenPost)
+	tokenPost := new(models.PostAppToken)
 	if err = c.Bind(tokenPost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -18,7 +18,10 @@ func PostAppToken(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	response, err := services.GenJwtToken(tokenPost)
+	response, err := services.NewJwtToken(tokenPost)
+	if err != nil {
+		return err
+	}
 
 	return c.JSON(http.StatusOK, response)
 }
