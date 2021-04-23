@@ -12,15 +12,13 @@ import (
 )
 
 func GetCatalogosId(c echo.Context) error {
-	var err error
-	var idCatalogo int
 
-	idCatalogo, err = strconv.Atoi(c.Param(catalogoId))
+	idCatalogo, err := strconv.ParseUint(c.Param(catalogoId), 10, 64)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	catalogo, err := repository.ReadCatalogo(idCatalogo)
+	catalogo, err := repository.ReadCatalogo(uint(idCatalogo))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
@@ -42,13 +40,12 @@ func GetCatalogos(c echo.Context) error {
 }
 
 func PostCatalogos(c echo.Context) error {
-	var err error
 
 	catalogoPost := new(models.CatalogoPost)
-	if err = c.Bind(catalogoPost); err != nil {
+	if err := c.Bind(catalogoPost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if err = c.Validate(catalogoPost); err != nil {
+	if err := c.Validate(catalogoPost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
@@ -60,10 +57,9 @@ func PostCatalogos(c echo.Context) error {
 }
 
 func PostCatalogosLotes(c echo.Context) error {
-	var err error
-	var idCatalogo int
 
-	idCatalogo, err = strconv.Atoi(c.Param(catalogoId))
+	idCatalogo, err := strconv.ParseUint(c.Param(catalogoId), 10, 64)
+
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -76,7 +72,7 @@ func PostCatalogosLotes(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	lote, err := services.NewLote(idCatalogo, lotePost)
+	lote, err := services.NewLote(uint(idCatalogo), lotePost)
 	if err != nil {
 		return err
 	}

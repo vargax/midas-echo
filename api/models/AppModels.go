@@ -7,7 +7,7 @@ import "gorm.io/gorm"
 // *************************
 
 type File struct {
-	ID            int
+	ID            uint
 	Name          string
 	Path          string
 	PublicacionID int
@@ -15,9 +15,9 @@ type File struct {
 }
 
 type User struct {
-	ID     int
-	email  string
-	passwd string
+	ID     uint
+	Email  string `gorm:"unique;not null"`
+	Passwd string `json:"-" gorm:"not null"`
 	gorm.Model
 }
 

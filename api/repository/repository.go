@@ -1,19 +1,24 @@
 package repository
 
 import (
+	"encoding/base64"
 	"fmt"
 	"gitlab.activarsas.net/cvargasc/midas-echo/api/models"
 	"gitlab.activarsas.net/cvargasc/midas-echo/env"
+	"golang.org/x/crypto/bcrypt"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"
 	"os"
 	"strconv"
 )
 
-var dsn string
+var (
+	dsn         string
+	defaultUser string
+	defaultPass string
+)
 
 func Env() {
 	dsn = fmt.Sprintf(
@@ -24,6 +29,10 @@ func Env() {
 		os.Getenv(env.DbName),
 		os.Getenv(env.DbPass),
 	)
+
+	defaultUser = os.Getenv(env.DefaultUser)
+	defaultPass = os.Getenv(env.DefaultPass)
+
 }
 
 var db *gorm.DB
@@ -41,37 +50,45 @@ func Init() {
 		db.Logger = logger.Default.LogMode(logger.Info)
 	}
 
-	err = db.AutoMigrate(&models.Catalogo{}, &models.Lote{}, &models.Publicacion{}, &models.File{})
+	err = db.AutoMigrate(
+		&models.Catalogo{}, &models.Lote{}, &models.Publicacion{},
+		&models.File{}, &models.User{})
+	if err != nil {
+		panic(err)
+	}
+
+	err = initDB()
 	if err != nil {
 		panic(err)
 	}
 }
 
-func CreateCatalogo(catalogo *models.Catalogo) error {
-	result := db.Create(catalogo)
-	return result.Error
-}
+func initDB() error {
+	count := int64(-1)
 
-func ReadCatalogo(idCatalogo int) (models.Catalogo, error) {
-	var catalogo models.Catalogo
-	result := db.Preload(clause.Associations).First(&catalogo, idCatalogo)
-	return catalogo, result.Error
-}
-
-func ReadCatalogos(preload bool) ([]models.Catalogo, error) {
-	var catalogos []models.Catalogo
-	var result *gorm.DB
-
-	if preload {
-		result = db.Preload(clause.Associations).Find(&catalogos)
-	} else {
-		result = db.Find(&catalogos)
+	result := db.Model(&models.User{}).Count(&count)
+	if result.Error != nil {
+		return result.Error
 	}
 
-	return catalogos, result.Error
-}
+	if count == 0 {
 
-func CreateLote(lote *models.Lote) error {
-	result := db.Create(lote)
-	return result.Error
+		fmt.Printf("Creating default user %s with password %s", defaultUser, defaultPass)
+
+		hash, err := bcrypt.GenerateFromPassword([]byte(defaultPass), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+
+		admin := models.User{
+			Email:  defaultUser,
+			Passwd: base64.URLEncoding.EncodeToString(hash),
+		}
+
+		result := db.Create(&admin)
+		if result.Error != nil {
+			return result.Error
+		}
+	}
+	return nil
 }

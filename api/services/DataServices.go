@@ -14,7 +14,7 @@ func NewCatalogo(cp *models.CatalogoPost) (models.Catalogo, error) {
 	return nuevoCatalogo, err
 }
 
-func NewLote(idCatalogo int, lp *models.LotePost) (models.Lote, error) {
+func NewLote(idCatalogo uint, lp *models.LotePost) (models.Lote, error) {
 	nuevoLote := models.Lote{
 		CatalogoID:  idCatalogo,
 		Descripcion: lp.Descripcion,

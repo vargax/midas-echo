@@ -6,6 +6,9 @@ const (
 	DebugEcho = "DEBUG_FRAMEWORK"
 	DebugRepo = "DEBUG_REPOSITORY"
 
+	DefaultUser = "DEFAULT_USER"
+	DefaultPass = "DEFAULT_PASS"
+
 	JwtSecret   = "JWT_SECRET"
 	JwtTokenExp = "JWT_TOKEN_EXP"
 
