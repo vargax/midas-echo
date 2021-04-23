@@ -20,12 +20,11 @@ const (
 
 var e *echo.Echo
 
-func InitRoutes(framework *echo.Echo) {
+func Routes(framework *echo.Echo) {
 
 	e = framework
 
 	// App
-	InitAppController()
 	ag := e.Group(app)
 	ag.POST(token, PostAppToken)
 

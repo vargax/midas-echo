@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/joho/godotenv"
 	"gitlab.activarsas.net/cvargasc/midas-echo/api"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/repository"
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/services"
 )
 
 func main() {
@@ -11,6 +13,9 @@ func main() {
 		panic(err)
 	}
 
-	api.Init()
+	repository.Env()
+	services.Env()
+	api.Env()
 
+	api.Init()
 }

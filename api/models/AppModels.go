@@ -2,6 +2,10 @@ package models
 
 import "gorm.io/gorm"
 
+// Entities ****************
+// Persistent data maintained in the database
+// *************************
+
 type File struct {
 	ID            int
 	Name          string
@@ -15,4 +19,12 @@ type User struct {
 	email  string
 	passwd string
 	gorm.Model
+}
+
+// DTOs ************************
+// Data Transfer Objects
+// *****************************
+
+type JwtToken struct {
+	Token string `json:"token"`
 }

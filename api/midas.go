@@ -12,19 +12,30 @@ import (
 	"strconv"
 )
 
-func Init() {
+var (
+	debug bool
+	port  string
+	cors  string
+)
 
-	repository.InitRepository()
-
-	e := InitFramework()
-	controllers.InitRoutes(e)
-
-	e.Logger.Fatal(e.Start(os.Getenv(env.EchoPort)))
+func Env() {
+	debug, _ = strconv.ParseBool(os.Getenv(env.DebugEcho))
+	port = os.Getenv(env.EchoPort)
+	cors = os.Getenv(env.CorsOrigin)
 }
 
-func InitFramework() *echo.Echo {
+func Init() {
+	repository.Init()
+
+	e := InitEcho()
+	controllers.Routes(e)
+
+	e.Logger.Fatal(e.Start(port))
+}
+
+func InitEcho() *echo.Echo {
 	e := echo.New()
-	e.Debug, _ = strconv.ParseBool(os.Getenv(env.DebugEcho))
+	e.Debug = debug
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -32,7 +43,7 @@ func InitFramework() *echo.Echo {
 	e.Use(middleware.Secure())
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{os.Getenv(env.CorsOrigin)},
+		AllowOrigins: []string{cors},
 		AllowHeaders: []string{"Authorization"},
 		AllowMethods: []string{http.MethodGet, http.MethodPost},
 	}))
@@ -43,6 +54,10 @@ func InitFramework() *echo.Echo {
 
 	return e
 }
+
+// Validator ***************
+// https://echo.labstack.com/guide/request/#Validate
+// *************************
 
 type DataValidator struct {
 	validator *validator.Validate

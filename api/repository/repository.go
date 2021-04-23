@@ -13,10 +13,10 @@ import (
 	"strconv"
 )
 
-var db *gorm.DB
+var dsn string
 
-func InitRepository() {
-	dsn := fmt.Sprintf(
+func Env() {
+	dsn = fmt.Sprintf(
 		"host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
 		os.Getenv(env.DbHost),
 		os.Getenv(env.DbPort),
@@ -24,7 +24,11 @@ func InitRepository() {
 		os.Getenv(env.DbName),
 		os.Getenv(env.DbPass),
 	)
+}
 
+var db *gorm.DB
+
+func Init() {
 	var err error
 
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -41,7 +45,6 @@ func InitRepository() {
 	if err != nil {
 		panic(err)
 	}
-
 }
 
 func CreateCatalogo(catalogo *models.Catalogo) error {
