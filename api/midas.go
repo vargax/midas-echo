@@ -9,6 +9,7 @@ import (
 	"gitlab.activarsas.net/cvargasc/midas-echo/env"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func Init() {
@@ -23,6 +24,7 @@ func Init() {
 
 func InitFramework() *echo.Echo {
 	e := echo.New()
+	e.Debug, _ = strconv.ParseBool(os.Getenv(env.DebugEcho))
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())

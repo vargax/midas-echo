@@ -5,11 +5,17 @@ import (
 )
 
 const (
-	catalogosPath = "/catalogos"
-	lotesPath     = "/lotes"
+	// App
+	app   = "/app"
+	token = "/token"
 
-	PreloadParam    = "preload"
-	CatalogoIdParam = "catalogoId"
+	// Catalogos
+	catalogos = "/catalogos"
+	lotes     = "/lotes"
+
+	// Params
+	preload    = "preload"
+	catalogoId = "catalogoId"
 )
 
 var e *echo.Echo
@@ -18,11 +24,16 @@ func InitRoutes(framework *echo.Echo) {
 
 	e = framework
 
+	// App
+	InitAppController()
+	ag := e.Group(app)
+	ag.POST(token, PostAppToken)
+
 	// Catalogos
-	e.POST(catalogosPath, PostCatalogos)
+	cg := e.Group(catalogos)
+	cg.GET("", GetCatalogos)
+	cg.GET("/:"+catalogoId, GetCatalogosId)
 
-	e.GET(catalogosPath, GetCatalogos)
-	e.GET(catalogosPath+"/:"+CatalogoIdParam, GetCatalogosId)
-
-	e.POST(catalogosPath+"/:"+CatalogoIdParam+lotesPath, PostCatalogosLotes)
+	cg.POST("", PostCatalogos)
+	cg.POST("/:"+catalogoId+lotes, PostCatalogosLotes)
 }

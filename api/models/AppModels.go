@@ -11,7 +11,8 @@ type File struct {
 }
 
 type User struct {
-	ID    int
-	email string
+	ID     int
+	email  string
+	passwd string
 	gorm.Model
 }

@@ -15,7 +15,7 @@ func GetCatalogosId(c echo.Context) error {
 	var err error
 	var idCatalogo int
 
-	idCatalogo, err = strconv.Atoi(c.Param(CatalogoIdParam))
+	idCatalogo, err = strconv.Atoi(c.Param(catalogoId))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -31,7 +31,7 @@ func GetCatalogosId(c echo.Context) error {
 }
 
 func GetCatalogos(c echo.Context) error {
-	preload, _ := strconv.ParseBool(c.QueryParam(PreloadParam))
+	preload, _ := strconv.ParseBool(c.QueryParam(preload))
 
 	catalogos, err := repository.ReadCatalogos(preload)
 	if err != nil {
@@ -63,7 +63,7 @@ func PostCatalogosLotes(c echo.Context) error {
 	var err error
 	var idCatalogo int
 
-	idCatalogo, err = strconv.Atoi(c.Param(CatalogoIdParam))
+	idCatalogo, err = strconv.Atoi(c.Param(catalogoId))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

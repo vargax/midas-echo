@@ -51,7 +51,7 @@ func CreateCatalogo(catalogo *models.Catalogo) error {
 
 func ReadCatalogo(idCatalogo int) (models.Catalogo, error) {
 	var catalogo models.Catalogo
-	result := db.First(&catalogo, idCatalogo)
+	result := db.Preload(clause.Associations).First(&catalogo, idCatalogo)
 	return catalogo, result.Error
 }
 
