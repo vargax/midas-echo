@@ -6,8 +6,9 @@ import (
 
 const (
 	// App
-	app   = "/app"
-	token = "/token"
+	app    = "/app"
+	tokens = "/tokens"
+	users  = "/users"
 
 	// Catalogos
 	catalogos = "/catalogos"
@@ -26,7 +27,8 @@ func Routes(framework *echo.Echo) {
 
 	// App
 	ag := e.Group(app)
-	ag.POST(token, PostAppToken)
+	ag.POST(tokens, PostAppTokens)
+	ag.POST(users, PostAppUsers)
 
 	// Catalogos
 	cg := e.Group(catalogos)

@@ -1,6 +1,13 @@
 package repository
 
-import "gitlab.activarsas.net/cvargasc/midas-echo/api/models"
+import (
+	"gitlab.activarsas.net/cvargasc/midas-echo/api/models"
+)
+
+func CreateUser(user *models.User) error {
+	result := db.Create(user)
+	return result.Error
+}
 
 func ReadUser(username string) (models.User, error) {
 	user := models.User{

@@ -29,9 +29,25 @@ func Env() {
 	}
 }
 
-func NewJwtToken(tp *models.PostAppToken) (*models.JwtToken, error) {
+func NewUser(userToBe *models.PostAppUsers) (*models.User, error) {
+	pass, err := utils.EncodePassword(userToBe.Password)
+	if err != nil {
+		return nil, err
+	}
 
-	user, err := repository.ReadUser(tp.Username)
+	newUser := models.User{
+		Username: userToBe.Username,
+		Password: pass,
+	}
+
+	err = repository.CreateUser(&newUser)
+	return &newUser, err
+
+}
+
+func NewJwtToken(tokenRequest *models.PostAppToken) (*models.JwtToken, error) {
+
+	user, err := repository.ReadUser(tokenRequest.Username)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, echo.ErrUnauthorized
 	}
@@ -39,7 +55,7 @@ func NewJwtToken(tp *models.PostAppToken) (*models.JwtToken, error) {
 		return nil, err
 	}
 
-	if !utils.PasswordMatch(user.Password, tp.Password) {
+	if !utils.PasswordMatch(user.Password, tokenRequest.Password) {
 		return nil, echo.ErrUnauthorized
 	}
 
