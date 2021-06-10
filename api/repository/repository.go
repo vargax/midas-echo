@@ -12,6 +12,10 @@ import (
 	"strconv"
 )
 
+const (
+	DUPLICATE_KEY = "23505"
+)
+
 var (
 	dsn         string
 	defaultUser string

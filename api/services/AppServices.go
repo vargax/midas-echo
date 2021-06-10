@@ -3,12 +3,14 @@ package services
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/jackc/pgconn"
 	"github.com/labstack/echo/v4"
 	"gitlab.activarsas.net/cvargasc/midas-echo/api/models"
 	"gitlab.activarsas.net/cvargasc/midas-echo/api/repository"
 	"gitlab.activarsas.net/cvargasc/midas-echo/api/utils"
 	"gitlab.activarsas.net/cvargasc/midas-echo/env"
 	"gorm.io/gorm"
+	"net/http"
 	"os"
 	"time"
 )
@@ -41,8 +43,11 @@ func NewUser(userToBe *models.PostAppUsers) (*models.User, error) {
 	}
 
 	err = repository.CreateUser(&newUser)
-	return &newUser, err
+	if e, ok := err.(*pgconn.PgError); ok && e.Code == repository.DUPLICATE_KEY {
+		return nil, echo.NewHTTPError(http.StatusConflict, e.Detail)
+	}
 
+	return &newUser, err
 }
 
 func NewJwtToken(tokenRequest *models.PostAppToken) (*models.JwtToken, error) {
