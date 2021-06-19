@@ -25,7 +25,7 @@ type (
 		Role     string `json:"role" validate:"required"`
 	}
 
-	PostAppToken struct {
+	PostPublicToken struct {
 		Username string `json:"username" validate:"required"`
 		Password string `json:"password" validate:"required"`
 	}

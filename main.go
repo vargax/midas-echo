@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"gitlab.activarsas.net/cvargasc/midas-echo/api"
-	"gitlab.activarsas.net/cvargasc/midas-echo/api/repository"
-	"gitlab.activarsas.net/cvargasc/midas-echo/api/services"
+	"gitlab.activarsas.net/cvargasc/midas-echo/src"
+	"gitlab.activarsas.net/cvargasc/midas-echo/src/middleware"
+	"gitlab.activarsas.net/cvargasc/midas-echo/src/repository"
 )
 
 func main() {
@@ -14,8 +14,8 @@ func main() {
 	}
 
 	repository.Env()
-	services.Env()
-	api.Env()
+	middleware.Env()
+	src.Env()
 
-	api.Init()
+	src.Init()
 }

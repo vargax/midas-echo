@@ -18,6 +18,7 @@ type User struct {
 	ID       uint
 	Username string `gorm:"uniqueIndex;not null"`
 	Password string `json:"-" gorm:"not null"`
+	Role     string `gorm:"not null"`
 	gorm.Model
 }
 

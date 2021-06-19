@@ -1,8 +1,8 @@
 package services
 
 import (
-	"gitlab.activarsas.net/cvargasc/midas-echo/api/models"
-	"gitlab.activarsas.net/cvargasc/midas-echo/api/repository"
+	"gitlab.activarsas.net/cvargasc/midas-echo/src/models"
+	"gitlab.activarsas.net/cvargasc/midas-echo/src/repository"
 )
 
 func NewCatalogo(cp *models.PostCatalogos) (models.Catalogo, error) {

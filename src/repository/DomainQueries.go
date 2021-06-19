@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"gitlab.activarsas.net/cvargasc/midas-echo/api/models"
+	"gitlab.activarsas.net/cvargasc/midas-echo/src/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

@@ -1,12 +1,14 @@
-package api
+package src
 
 import (
 	"github.com/go-playground/validator/v10"
+	ecb "github.com/labstack/echo-contrib/casbin"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"gitlab.activarsas.net/cvargasc/midas-echo/api/controllers"
-	"gitlab.activarsas.net/cvargasc/midas-echo/api/repository"
+	emw "github.com/labstack/echo/v4/middleware"
 	"gitlab.activarsas.net/cvargasc/midas-echo/env"
+	"gitlab.activarsas.net/cvargasc/midas-echo/src/controllers"
+	"gitlab.activarsas.net/cvargasc/midas-echo/src/middleware"
+	"gitlab.activarsas.net/cvargasc/midas-echo/src/repository"
 	"net/http"
 	"os"
 	"strconv"
@@ -27,26 +29,29 @@ func Env() {
 func Init() {
 	repository.Init()
 
-	e := InitEcho()
+	e := initEcho()
 	controllers.Routes(e)
 
 	e.Logger.Fatal(e.Start(port))
 }
 
-func InitEcho() *echo.Echo {
+func initEcho() *echo.Echo {
 	e := echo.New()
 	e.Debug = debug
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.Gzip())
-	e.Use(middleware.Secure())
+	e.Use(emw.Logger())
+	e.Use(emw.Recover())
+	e.Use(emw.Gzip())
+	e.Use(emw.Secure())
 
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+	e.Use(emw.CORSWithConfig(emw.CORSConfig{
 		AllowOrigins: []string{cors},
 		AllowHeaders: []string{"Authorization"},
 		AllowMethods: []string{http.MethodGet, http.MethodPost},
 	}))
+
+	e.Use(emw.JWTWithConfig(middleware.AuthenticationConfig()))
+	e.Use(ecb.MiddlewareWithConfig(middleware.AuthorizationConfig()))
 
 	e.Validator = &DataValidator{
 		validator: validator.New(),
