@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/labstack/echo/v4"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/middleware"
+	"github.com/vargax/midas-echo/src/middleware"
 )
 
 // Public endpoints ********

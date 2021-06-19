@@ -1,4 +1,4 @@
-module gitlab.activarsas.net/cvargasc/midas-echo
+module github.com/vargax/midas-echo
 
 go 1.16
 

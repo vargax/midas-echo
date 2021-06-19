@@ -3,9 +3,9 @@ package controllers
 import (
 	"errors"
 	"github.com/labstack/echo/v4"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/models"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/repository"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/services"
+	"github.com/vargax/midas-echo/src/models"
+	"github.com/vargax/midas-echo/src/repository"
+	"github.com/vargax/midas-echo/src/services"
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"

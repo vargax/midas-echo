@@ -2,9 +2,9 @@ package repository
 
 import (
 	"fmt"
-	"gitlab.activarsas.net/cvargasc/midas-echo/env"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/models"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/utils"
+	"github.com/vargax/midas-echo/env"
+	"github.com/vargax/midas-echo/src/models"
+	"github.com/vargax/midas-echo/src/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

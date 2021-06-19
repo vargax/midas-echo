@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/middleware"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/repository"
+	"github.com/vargax/midas-echo/src"
+	"github.com/vargax/midas-echo/src/middleware"
+	"github.com/vargax/midas-echo/src/repository"
 )
 
 func main() {

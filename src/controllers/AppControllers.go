@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/labstack/echo/v4"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/middleware"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/models"
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/services"
+	"github.com/vargax/midas-echo/src/middleware"
+	"github.com/vargax/midas-echo/src/models"
+	"github.com/vargax/midas-echo/src/services"
 	"net/http"
 )
 

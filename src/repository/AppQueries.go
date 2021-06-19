@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"gitlab.activarsas.net/cvargasc/midas-echo/src/models"
+	"github.com/vargax/midas-echo/src/models"
 )
 
 func CreateUser(user *models.User) error {
