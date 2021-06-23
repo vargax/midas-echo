@@ -2,9 +2,7 @@ package middleware
 
 import (
 	"errors"
-	"github.com/casbin/casbin/v2"
 	"github.com/dgrijalva/jwt-go"
-	ecb "github.com/labstack/echo-contrib/casbin"
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/vargax/midas-echo/env"
@@ -13,7 +11,6 @@ import (
 	"github.com/vargax/midas-echo/src/utils"
 	"gorm.io/gorm"
 	"os"
-	"path"
 	"strings"
 	"time"
 )
@@ -49,9 +46,9 @@ func AuthenticationConfig() emw.JWTConfig {
 	}
 }
 
-func NewJwtToken(tokenRequest *models.PostPublicToken) (*models.JwtToken, error) {
+func JwtTokenFactory(tr *models.PostPublicToken) (*models.JwtToken, error) {
 
-	user, err := repository.ReadUser(tokenRequest.Username)
+	user, err := repository.ReadUser(tr.Username)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, echo.ErrUnauthorized
 	}
@@ -59,7 +56,7 @@ func NewJwtToken(tokenRequest *models.PostPublicToken) (*models.JwtToken, error)
 		return nil, err
 	}
 
-	if !utils.PasswordMatch(user.Password, tokenRequest.Password) {
+	if !utils.PasswordMatch(user.Password, tr.Password) {
 		return nil, echo.ErrUnauthorized
 	}
 
@@ -99,32 +96,4 @@ const Public = "/public"
 
 func skipper(c echo.Context) bool {
 	return strings.HasPrefix(c.Path(), Public)
-}
-
-// Authorization ***********
-// https://echo.labstack.com/middleware/casbin-auth/
-// *************************
-const (
-	model  = "casbin/model.conf"
-	policy = "casbin/policy.csv"
-)
-
-func AuthorizationConfig() ecb.Config {
-
-	modelPath := path.Join(utils.GoFilePath(), model)
-	policyPath := path.Join(utils.GoFilePath(), policy)
-
-	enforcer, err := casbin.NewEnforcer(modelPath, policyPath)
-	if err != nil {
-		panic(err)
-	}
-
-	return ecb.Config{
-		Skipper:  skipper,
-		Enforcer: enforcer,
-		UserGetter: func(c echo.Context) (string, error) {
-			user, err := ctxGetUser(c)
-			return user.Role, err
-		},
-	}
 }

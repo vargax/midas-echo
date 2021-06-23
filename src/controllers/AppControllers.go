@@ -36,7 +36,7 @@ func PostPublicTokens(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	response, err := middleware.NewJwtToken(tokenPost)
+	response, err := middleware.JwtTokenFactory(tokenPost)
 	if err != nil {
 		return err
 	}

@@ -85,6 +85,7 @@ func initDB() error {
 		admin := models.User{
 			Username: defaultUser,
 			Password: defaultPass,
+			Role:     models.RoleAdmin,
 		}
 
 		result := db.Create(&admin)
