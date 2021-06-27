@@ -6,7 +6,7 @@ package models
 
 type (
 	PostCatalogos struct {
-		EsPublico bool `validate:"required"`
+		EsPublico bool
 	}
 
 	PostCatalogosLotes struct {
