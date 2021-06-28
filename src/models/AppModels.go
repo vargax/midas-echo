@@ -8,8 +8,10 @@ import "gorm.io/gorm"
 type Role = string
 
 const (
-	// RoleAdmin SuperUser
+	// RoleAdmin A super user
 	RoleAdmin = Role("admin")
+	// RoleUser A regular authenticated user
+	RoleUser = Role("user")
 	// RoleGuest Unauthenticated user / fallback
 	RoleGuest = Role("guest")
 )
@@ -30,7 +32,7 @@ type User struct {
 	ID       uint
 	Username string `gorm:"uniqueIndex;not null"`
 	Password string `json:"-" gorm:"not null"`
-	Role     Role   `gorm:"not null"`
+	Role     string `gorm:"not null"`
 	gorm.Model
 }
 

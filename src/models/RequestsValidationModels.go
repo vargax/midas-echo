@@ -22,7 +22,7 @@ type (
 	PostAppUsers struct {
 		Username string `json:"username" validate:"required,email"`
 		Password string `json:"password" validate:"required"`
-		Role     string `json:"role" validate:"required"`
+		Role     string `json:"role" validate:"required,oneof=admin user"`
 	}
 
 	PostPublicToken struct {

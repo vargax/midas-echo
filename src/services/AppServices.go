@@ -18,6 +18,7 @@ func NewUser(userToBe *models.PostAppUsers) (*models.User, error) {
 	newUser := models.User{
 		Username: userToBe.Username,
 		Password: pass,
+		Role:     userToBe.Role,
 	}
 
 	err = repository.CreateUser(&newUser)
