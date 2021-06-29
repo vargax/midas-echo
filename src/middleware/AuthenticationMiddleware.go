@@ -31,6 +31,7 @@ func Env() {
 // *************************
 const (
 	jwtclaimsUsername = "Username"
+	jwtclaimsRole     = "Role"
 	jwtclaimsExp      = "exp"
 )
 
@@ -64,6 +65,7 @@ func JwtTokenFactory(tr *models.PostPublicToken) (*models.JwtToken, error) {
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims[jwtclaimsUsername] = user.Username
+	claims[jwtclaimsRole] = user.Role
 	claims[jwtclaimsExp] = time.Now().Add(tokenLive).Unix()
 
 	signedToken, err := token.SignedString([]byte(secret))
@@ -77,11 +79,21 @@ func JwtTokenFactory(tr *models.PostPublicToken) (*models.JwtToken, error) {
 	return &response, nil
 }
 
-func ctxGetUser(c echo.Context) (*models.User, error) {
+func jwtExtractClaim(c echo.Context, claim string) (string, error) {
 	ctxUser := c.Get("user").(*jwt.Token)
 	ctxClaims := ctxUser.Claims.(jwt.MapClaims)
 
-	username := ctxClaims[jwtclaimsUsername].(string)
+	if value, ok := ctxClaims[claim].(string); ok {
+		return value, nil
+	}
+	return "", errors.New(claim + " claim not found")
+}
+
+func ctxGetUser(c echo.Context) (*models.User, error) {
+	username, err := jwtExtractClaim(c, jwtclaimsUsername)
+	if err != nil {
+		return nil, err
+	}
 
 	user, err := repository.ReadUser(username)
 	if err != nil {
