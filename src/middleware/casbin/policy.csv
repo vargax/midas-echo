@@ -1,2 +1,3 @@
-p, admin, *, *
+p, guest, /app/tokens, POST
 p, user, *, GET
+p, admin, *, *

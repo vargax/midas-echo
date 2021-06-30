@@ -2,23 +2,13 @@ package controllers
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/vargax/midas-echo/src/middleware"
 )
 
-// Public endpoints ********
-// All routes under /public skip Authentication and Authorization (services.skipper function)
-// *************************
-const (
-	tokens = "/tokens"
-)
-
-// Protected endpoints *****
-// All other routes are Protected by default (Authentication and Authorization enforced)
-// *************************
 const (
 	// App
-	app   = "/app"
-	users = "/users"
+	app    = "/app"
+	users  = "/users"
+	tokens = "/tokens"
 
 	// Catalogos
 	catalogos = "/catalogos"
@@ -35,14 +25,10 @@ func Routes(framework *echo.Echo) {
 
 	e = framework
 
-	// Public endpoints ********
-	pg := e.Group(middleware.Public)
-	pg.POST(tokens, PostPublicTokens)
-
-	// Protected endpoints *****
 	// App
 	ag := e.Group(app)
 	ag.POST(users, PostAppUsers)
+	ag.POST(tokens, PostAppTokens)
 
 	// Catalogos
 	cg := e.Group(catalogos)

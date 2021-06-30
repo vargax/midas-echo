@@ -11,7 +11,6 @@ import (
 	"github.com/vargax/midas-echo/src/utils"
 	"gorm.io/gorm"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -43,12 +42,15 @@ var (
 func AuthenticationConfig() emw.JWTConfig {
 	return emw.JWTConfig{
 		SigningKey: []byte(secret),
-		Skipper:    skipper,
+		Skipper: func(c echo.Context) bool {
+			// We will skip authentication (i.e JWT token validation) if there is no Authorization Header
+			// AuthorizationMiddleware will treat unauthenticated requests as RoleGuest
+			return c.Request().Header.Get(echo.HeaderAuthorization) == ""
+		},
 	}
 }
 
 func JwtTokenFactory(tr *models.PostPublicToken) (*models.JwtToken, error) {
-
 	user, err := repository.ReadUser(tr.Username)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, echo.ErrUnauthorized
@@ -80,13 +82,22 @@ func JwtTokenFactory(tr *models.PostPublicToken) (*models.JwtToken, error) {
 }
 
 func jwtExtractClaim(c echo.Context, claim string) (string, error) {
-	ctxUser := c.Get("user").(*jwt.Token)
-	ctxClaims := ctxUser.Claims.(jwt.MapClaims)
-
-	if value, ok := ctxClaims[claim].(string); ok {
-		return value, nil
+	ctxUser, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return "", errors.New("JWT token not found")
 	}
-	return "", errors.New(claim + " claim not found")
+
+	jwtClaims, ok := ctxUser.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", errors.New("MapClaims not found")
+	}
+
+	claimValue, ok := jwtClaims[claim].(string)
+	if !ok {
+		return "", errors.New(claim + " claim not found")
+	}
+
+	return claimValue, nil
 }
 
 func ctxGetUser(c echo.Context) (*models.User, error) {
@@ -101,11 +112,4 @@ func ctxGetUser(c echo.Context) (*models.User, error) {
 	}
 
 	return &user, nil
-}
-
-// Public All routes under /public skip Authentication and Authorization
-const Public = "/public"
-
-func skipper(c echo.Context) bool {
-	return strings.HasPrefix(c.Path(), Public)
 }

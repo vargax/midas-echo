@@ -26,7 +26,7 @@ func PostAppUsers(c echo.Context) error {
 	return c.JSON(http.StatusCreated, response)
 }
 
-func PostPublicTokens(c echo.Context) error {
+func PostAppTokens(c echo.Context) error {
 
 	tokenPost := new(models.PostPublicToken)
 	if err := c.Bind(tokenPost); err != nil {
