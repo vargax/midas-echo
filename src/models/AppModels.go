@@ -5,7 +5,7 @@ import "gorm.io/gorm"
 // Roles ******************
 // Used for Authorization
 // *************************
-type Role = string
+type Role string
 
 const (
 	// RoleAdmin A super user
@@ -32,7 +32,7 @@ type User struct {
 	ID       uint
 	Username string `gorm:"uniqueIndex;not null"`
 	Password string `json:"-" gorm:"not null"`
-	Role     string `gorm:"not null"`
+	Role     Role   `gorm:"not null"`
 	gorm.Model
 }
 

@@ -32,7 +32,7 @@ func AuthorizationConfig() ecb.Config {
 			role, err := jwtExtractClaim(c, jwtclaimsRole)
 			if err != nil {
 				// If there is any problem getting the role, we will default to Guest
-				return models.RoleGuest, nil
+				return string(models.RoleGuest), nil
 			}
 			return role, nil
 		},
