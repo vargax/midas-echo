@@ -1,11 +1,10 @@
-package controllers
+package echo
 
 import (
 	"errors"
 	"github.com/labstack/echo/v4"
-	"github.com/vargax/midas-echo/src/models"
-	"github.com/vargax/midas-echo/src/repository"
-	"github.com/vargax/midas-echo/src/services"
+	"github.com/vargax/midas-echo/src/echo/validator"
+	"github.com/vargax/midas-echo/src/postgres"
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"
@@ -18,7 +17,7 @@ func GetCatalogosId(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	catalogo, err := repository.ReadCatalogo(uint(idCatalogo))
+	catalogo, err := postgres.Catalogo(uint(idCatalogo))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
@@ -31,7 +30,7 @@ func GetCatalogosId(c echo.Context) error {
 func GetCatalogos(c echo.Context) error {
 	preload, _ := strconv.ParseBool(c.QueryParam(preload))
 
-	catalogos, err := repository.ReadCatalogos(preload)
+	catalogos, err := postgres.Catalogos(preload)
 	if err != nil {
 		return err
 	}
@@ -40,7 +39,7 @@ func GetCatalogos(c echo.Context) error {
 
 func PostCatalogos(c echo.Context) error {
 
-	catalogoPost := new(models.PostCatalogos)
+	catalogoPost := new(validator.PostCatalogos)
 	if err := c.Bind(catalogoPost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -48,7 +47,7 @@ func PostCatalogos(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	catalogo, err := services.NewCatalogo(catalogoPost)
+	catalogo, err := postgres.NewCatalogo(catalogoPost)
 	if err != nil {
 		return err
 	}
@@ -63,7 +62,7 @@ func PostCatalogosLotes(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	lotePost := new(models.PostCatalogosLotes)
+	lotePost := new(validator.PostCatalogosLotes)
 	if err = c.Bind(lotePost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -71,7 +70,7 @@ func PostCatalogosLotes(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	lote, err := services.NewLote(uint(idCatalogo), lotePost)
+	lote, err := postgres.NewLote(uint(idCatalogo), lotePost)
 	if err != nil {
 		return err
 	}

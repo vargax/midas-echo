@@ -1,4 +1,4 @@
-package middleware
+package auth
 
 import (
 	"errors"
@@ -6,24 +6,12 @@ import (
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/vargax/midas-echo/env"
-	"github.com/vargax/midas-echo/src/models"
-	"github.com/vargax/midas-echo/src/repository"
-	"github.com/vargax/midas-echo/src/utils"
+	"github.com/vargax/midas-echo/src/echo/validator"
+	"github.com/vargax/midas-echo/src/postgres"
 	"gorm.io/gorm"
 	"os"
 	"time"
 )
-
-func Env() {
-	var err error
-
-	secret = os.Getenv(env.JwtSecret)
-
-	tokenLive, err = time.ParseDuration(os.Getenv(env.JwtTokenExp))
-	if err != nil {
-		panic(err)
-	}
-}
 
 // Authentication **********
 // https://echo.labstack.com/cookbook/jwt/
@@ -40,6 +28,14 @@ var (
 )
 
 func AuthenticationConfig() emw.JWTConfig {
+	secret = os.Getenv(env.JwtSecret)
+
+	var err error
+	tokenLive, err = time.ParseDuration(os.Getenv(env.JwtTokenExp))
+	if err != nil {
+		panic(err)
+	}
+
 	return emw.JWTConfig{
 		SigningKey: []byte(secret),
 		Skipper: func(c echo.Context) bool {
@@ -50,8 +46,12 @@ func AuthenticationConfig() emw.JWTConfig {
 	}
 }
 
-func JwtTokenFactory(tr *models.PostPublicToken) (*models.JwtToken, error) {
-	user, err := repository.ReadUser(tr.Username)
+type JwtToken struct {
+	Token string `json:"token"`
+}
+
+func JwtTokenFactory(tr *validator.PostPublicToken) (*JwtToken, error) {
+	user, err := postgres.User(tr.Username)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, echo.ErrUnauthorized
 	}
@@ -59,7 +59,7 @@ func JwtTokenFactory(tr *models.PostPublicToken) (*models.JwtToken, error) {
 		return nil, err
 	}
 
-	if !utils.PasswordMatch(user.Password, tr.Password) {
+	if !postgres.PasswordMatch(user.Password, tr.Password) {
 		return nil, echo.ErrUnauthorized
 	}
 
@@ -75,7 +75,7 @@ func JwtTokenFactory(tr *models.PostPublicToken) (*models.JwtToken, error) {
 		return nil, err
 	}
 
-	response := models.JwtToken{
+	response := JwtToken{
 		Token: signedToken,
 	}
 	return &response, nil
@@ -98,18 +98,4 @@ func jwtExtractClaim(c echo.Context, claim string) (string, error) {
 	}
 
 	return claimValue, nil
-}
-
-func ctxGetUser(c echo.Context) (*models.User, error) {
-	username, err := jwtExtractClaim(c, jwtclaimsUsername)
-	if err != nil {
-		return nil, err
-	}
-
-	user, err := repository.ReadUser(username)
-	if err != nil {
-		return nil, err
-	}
-
-	return &user, nil
 }

@@ -1,16 +1,16 @@
-package controllers
+package echo
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/vargax/midas-echo/src/middleware"
-	"github.com/vargax/midas-echo/src/models"
-	"github.com/vargax/midas-echo/src/services"
+	"github.com/vargax/midas-echo/src/echo/auth"
+	"github.com/vargax/midas-echo/src/echo/validator"
+	"github.com/vargax/midas-echo/src/postgres"
 	"net/http"
 )
 
 func PostAppUsers(c echo.Context) error {
 
-	userPost := new(models.PostAppUsers)
+	userPost := new(validator.PostAppUsers)
 	if err := c.Bind(userPost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -18,7 +18,7 @@ func PostAppUsers(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	response, err := services.NewUser(userPost)
+	response, err := postgres.NewUser(userPost)
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func PostAppUsers(c echo.Context) error {
 
 func PostAppTokens(c echo.Context) error {
 
-	tokenPost := new(models.PostPublicToken)
+	tokenPost := new(validator.PostPublicToken)
 	if err := c.Bind(tokenPost); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -36,7 +36,7 @@ func PostAppTokens(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	response, err := middleware.JwtTokenFactory(tokenPost)
+	response, err := auth.JwtTokenFactory(tokenPost)
 	if err != nil {
 		return err
 	}

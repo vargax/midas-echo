@@ -1,4 +1,4 @@
-package models
+package validator
 
 // Domain ******************
 // To validate business logic

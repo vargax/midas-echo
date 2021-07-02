@@ -2,9 +2,8 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/vargax/midas-echo/src"
-	"github.com/vargax/midas-echo/src/middleware"
-	"github.com/vargax/midas-echo/src/repository"
+	"github.com/vargax/midas-echo/src/echo"
+	"github.com/vargax/midas-echo/src/postgres"
 )
 
 func main() {
@@ -13,9 +12,6 @@ func main() {
 		panic(err)
 	}
 
-	repository.Env()
-	middleware.Env()
-	src.Env()
-
-	src.Init()
+	postgres.Init()
+	echo.Init()
 }

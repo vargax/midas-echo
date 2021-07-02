@@ -1,12 +1,12 @@
-package middleware
+package auth
 
 import (
 	"github.com/casbin/casbin/v2"
 	ecb "github.com/labstack/echo-contrib/casbin"
 	"github.com/labstack/echo/v4"
-	"github.com/vargax/midas-echo/src/models"
-	"github.com/vargax/midas-echo/src/utils"
+	"github.com/vargax/midas-echo/src"
 	"path"
+	"runtime"
 )
 
 // Authorization ***********
@@ -18,8 +18,8 @@ const (
 )
 
 func AuthorizationConfig() ecb.Config {
-	modelPath := path.Join(utils.GoFilePath(), model)
-	policyPath := path.Join(utils.GoFilePath(), policy)
+	modelPath := path.Join(filePath(), model)
+	policyPath := path.Join(filePath(), policy)
 
 	e, err := casbin.NewEnforcer(modelPath, policyPath)
 	if err != nil {
@@ -32,9 +32,14 @@ func AuthorizationConfig() ecb.Config {
 			role, err := jwtExtractClaim(c, jwtclaimsRole)
 			if err != nil {
 				// If there is any problem getting the role, we will default to Guest
-				return string(models.RoleGuest), nil
+				return string(src.RoleGuest), nil
 			}
 			return role, nil
 		},
 	}
+}
+
+func filePath() string {
+	_, filename, _, _ := runtime.Caller(1)
+	return path.Dir(filename)
 }

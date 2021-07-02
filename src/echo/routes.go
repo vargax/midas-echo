@@ -1,4 +1,4 @@
-package controllers
+package echo
 
 import (
 	"github.com/labstack/echo/v4"
@@ -18,8 +18,6 @@ const (
 	preload    = "preload"
 	catalogoId = "catalogoId"
 )
-
-var e *echo.Echo
 
 func Routes(framework *echo.Echo) {
 
