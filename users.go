@@ -1,4 +1,6 @@
-package src
+package midas
+
+import "errors"
 
 // Role type for Authorization
 type Role string
@@ -19,6 +21,14 @@ type User struct {
 	Role     Role   `gorm:"not null"`
 }
 
-type UserService interface {
-	CreateUser(u *User) error
+type UserSrv interface {
+	New(u *User) error
+	User(username string) (*User, error)
+	Authenticate(u *User) error
 }
+
+var (
+	UserNotFound          = errors.New("user not found")
+	PasswordDontMatch     = errors.New("password don't match")
+	UserAlreadyRegistered = errors.New("user already registered")
+)

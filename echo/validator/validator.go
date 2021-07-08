@@ -7,7 +7,7 @@ type DataValidator struct {
 	validator *validator.Validate
 }
 
-func NewValidator() *DataValidator {
+func New() *DataValidator {
 	return &DataValidator{
 		validator: validator.New(),
 	}

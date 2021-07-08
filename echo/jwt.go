@@ -1,14 +1,13 @@
-package auth
+package echo
 
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
+	"github.com/vargax/midas-echo"
+	validator2 "github.com/vargax/midas-echo/echo/validator"
 	"github.com/vargax/midas-echo/env"
-	"github.com/vargax/midas-echo/src/echo/validator"
-	"github.com/vargax/midas-echo/src/postgres"
-	"gorm.io/gorm"
 	"os"
 	"time"
 )
@@ -50,17 +49,18 @@ type JwtToken struct {
 	Token string `json:"token"`
 }
 
-func JwtTokenFactory(tr *validator.PostPublicToken) (*JwtToken, error) {
-	user, err := postgres.User(tr.Username)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+func JwtTokenFactory(tr *validator2.PostPublicToken) (*JwtToken, error) {
+	user := midas.User{
+		Username: tr.Username,
+		Password: tr.Password,
+	}
+
+	err := ss.UserSrv.Authenticate(&user)
+	if errors.Is(err, midas.UserNotFound) || errors.Is(err, midas.PasswordDontMatch) {
 		return nil, echo.ErrUnauthorized
 	}
 	if err != nil {
 		return nil, err
-	}
-
-	if !postgres.PasswordMatch(user.Password, tr.Password) {
-		return nil, echo.ErrUnauthorized
 	}
 
 	token := jwt.New(jwt.SigningMethodHS256)

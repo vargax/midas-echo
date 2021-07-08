@@ -1,10 +1,10 @@
-package auth
+package echo
 
 import (
 	"github.com/casbin/casbin/v2"
 	ecb "github.com/labstack/echo-contrib/casbin"
 	"github.com/labstack/echo/v4"
-	"github.com/vargax/midas-echo/src"
+	"github.com/vargax/midas-echo"
 	"path"
 	"runtime"
 )
@@ -21,18 +21,18 @@ func AuthorizationConfig() ecb.Config {
 	modelPath := path.Join(filePath(), model)
 	policyPath := path.Join(filePath(), policy)
 
-	e, err := casbin.NewEnforcer(modelPath, policyPath)
+	enf, err := casbin.NewEnforcer(modelPath, policyPath)
 	if err != nil {
 		panic(err)
 	}
 
 	return ecb.Config{
-		Enforcer: e,
+		Enforcer: enf,
 		UserGetter: func(c echo.Context) (string, error) {
 			role, err := jwtExtractClaim(c, jwtclaimsRole)
 			if err != nil {
 				// If there is any problem getting the role, we will default to Guest
-				return string(src.RoleGuest), nil
+				return string(midas.RoleGuest), nil
 			}
 			return role, nil
 		},
