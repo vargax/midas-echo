@@ -1,9 +1,25 @@
-package validator
+package echo
+
+import "github.com/go-playground/validator/v10"
+
+// DataValidator https://echo.labstack.com/guide/request/#Validate
+type DataValidator struct {
+	validator *validator.Validate
+}
+
+func (dv *DataValidator) Validate(i interface{}) error {
+	return dv.validator.Struct(i)
+}
+
+func newValidator() *DataValidator {
+	return &DataValidator{
+		validator: validator.New(),
+	}
+}
 
 // Domain ******************
 // To validate business logic
 // *************************
-
 type (
 	PostCatalogos struct {
 		EsPublico bool
@@ -17,7 +33,6 @@ type (
 // App *********************
 // To validate Application logic
 // *************************
-
 type (
 	PostAppUsers struct {
 		Username string `json:"username" validate:"required,email"`

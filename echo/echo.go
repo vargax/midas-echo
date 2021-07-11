@@ -5,7 +5,6 @@ import (
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/vargax/midas-echo"
-	"github.com/vargax/midas-echo/echo/validator"
 	"github.com/vargax/midas-echo/env"
 	"net/http"
 	"os"
@@ -35,12 +34,12 @@ func Start(s *midas.Services) {
 		AllowMethods: []string{http.MethodGet, http.MethodPost},
 	}))
 
-	e.Use(emw.JWTWithConfig(AuthenticationConfig()))
-	e.Use(ecb.MiddlewareWithConfig(AuthorizationConfig()))
+	e.Use(emw.JWTWithConfig(authenticationConfig()))
+	e.Use(ecb.MiddlewareWithConfig(authorizationConfig()))
 
-	e.Validator = validator.New()
+	e.Validator = newValidator()
 
-	Routes(e)
+	routes(e)
 
 	port := os.Getenv(env.EchoPort)
 	e.Logger.Fatal(e.Start(port))

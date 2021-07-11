@@ -17,7 +17,7 @@ const (
 	policy = "casbin/policy.csv"
 )
 
-func AuthorizationConfig() ecb.Config {
+func authorizationConfig() ecb.Config {
 	modelPath := path.Join(filePath(), model)
 	policyPath := path.Join(filePath(), policy)
 

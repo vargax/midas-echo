@@ -6,7 +6,6 @@ import (
 	"github.com/labstack/echo/v4"
 	emw "github.com/labstack/echo/v4/middleware"
 	"github.com/vargax/midas-echo"
-	validator2 "github.com/vargax/midas-echo/echo/validator"
 	"github.com/vargax/midas-echo/env"
 	"os"
 	"time"
@@ -26,7 +25,7 @@ var (
 	tokenLive time.Duration
 )
 
-func AuthenticationConfig() emw.JWTConfig {
+func authenticationConfig() emw.JWTConfig {
 	secret = os.Getenv(env.JwtSecret)
 
 	var err error
@@ -45,11 +44,11 @@ func AuthenticationConfig() emw.JWTConfig {
 	}
 }
 
-type JwtToken struct {
+type jwtToken struct {
 	Token string `json:"token"`
 }
 
-func JwtTokenFactory(tr *validator2.PostPublicToken) (*JwtToken, error) {
+func jwtTokenFactory(tr *PostPublicToken) (*jwtToken, error) {
 	user := midas.User{
 		Username: tr.Username,
 		Password: tr.Password,
@@ -75,7 +74,7 @@ func JwtTokenFactory(tr *validator2.PostPublicToken) (*JwtToken, error) {
 		return nil, err
 	}
 
-	response := JwtToken{
+	response := jwtToken{
 		Token: signedToken,
 	}
 	return &response, nil
